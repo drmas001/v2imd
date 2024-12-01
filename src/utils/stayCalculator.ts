@@ -1,12 +1,16 @@
-export const LONG_STAY_THRESHOLD = 7; // days
+export const LONG_STAY_THRESHOLD = 30;
 
-export const calculateStayDuration = (admissionDate: string, dischargeDate?: string | null): number => {
-  const admissionDateTime = new Date(admissionDate);
-  const endDateTime = dischargeDate ? new Date(dischargeDate) : new Date();
-  return Math.ceil((endDateTime.getTime() - admissionDateTime.getTime()) / (1000 * 60 * 60 * 24));
-};
+export function calculateStay(admissionDate: string): number {
+  const admission = new Date(admissionDate);
+  const today = new Date();
+  const diffTime = Math.abs(today.getTime() - admission.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+}
 
 export const isLongStay = (admissionDate: string, dischargeDate?: string | null): boolean => {
-  const stayDuration = calculateStayDuration(admissionDate, dischargeDate);
+  const stayDuration = calculateStay(admissionDate);
   return stayDuration > LONG_STAY_THRESHOLD;
 };
+
+export default calculateStay;

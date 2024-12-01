@@ -12,10 +12,16 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          ui: ['lucide-react', 'date-fns', 'recharts']
-        }
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+          // Add custom logic to split other large modules
+          // For example:
+          // if (id.includes('some-large-module')) {
+          //   return 'large-module';
+          // }
+        },
       }
     }
   },

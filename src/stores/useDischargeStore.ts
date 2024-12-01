@@ -5,6 +5,7 @@ import { useMedicalNotesStore } from './useMedicalNotesStore';
 import { useLongStayStore } from './useLongStayStore';
 import type { DischargeData } from '../types/discharge';
 import type { ActivePatient } from '../types/activePatient';
+import { calculateStay, LONG_STAY_THRESHOLD } from '../utils/stayCalculator';
 
 interface AdmissionData {
   id: number;
@@ -141,8 +142,7 @@ export const useDischargeStore = create<DischargeStore>((set, get) => ({
       });
 
       // Remove from long stay patients if applicable
-      const { calculateStayDuration, LONG_STAY_THRESHOLD } = await import('../utils/stayCalculator');
-      const stayDuration = calculateStayDuration(selectedPatient.admission_date);
+      const stayDuration = calculateStay(selectedPatient.admission_date);
       if (stayDuration > LONG_STAY_THRESHOLD) {
         useLongStayStore.getState().removeDischargedPatient(selectedPatient.patient_id);
       }

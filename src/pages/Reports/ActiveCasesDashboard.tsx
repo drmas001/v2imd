@@ -20,8 +20,6 @@ import type { Appointment } from '../../types/appointment';
 import { PDFDocument } from '../../utils/pdf/core/PDFDocument';
 import { PDFTable } from '../../utils/pdf/core/PDFTable';
 
-const REFRESH_INTERVAL = 30000; // 30 seconds
-
 const ActiveCasesDashboard: React.FC = () => {
   const { currentUser } = useUserStore();
   const { patients, fetchPatients } = usePatientStore();
@@ -33,42 +31,30 @@ const ActiveCasesDashboard: React.FC = () => {
   const [globalFilter, setGlobalFilter] = useState('');
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await Promise.all([
+        fetchPatients(),
+        fetchConsultations(),
+        fetchAppointments(),
+      ]);
+      setLastUpdate(new Date());
+    } catch (error) {
+      setError('Failed to fetch data. Please try again.');
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        await Promise.all([
-          fetchPatients(),
-          fetchConsultations(),
-          fetchAppointments(),
-        ]);
-        setLastUpdate(new Date());
-      } catch (error) {
-        setError('Failed to fetch data. Please try again.');
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-
-        // Add console logs here
-        console.log('Fetched patients:', patients);
-        console.log('Fetched consultations:', consultations);
-        console.log('Fetched appointments:', appointments);
-        console.log('Current user:', currentUser);
-      }
-    };
-
     fetchData();
-    const interval = setInterval(fetchData, REFRESH_INTERVAL);
-    return () => clearInterval(interval);
   }, [
     fetchPatients,
     fetchConsultations,
     fetchAppointments,
-    patients,
-    consultations,
-    appointments,
-    currentUser,
   ]);
 
   // Adjusted filterByDepartment function
@@ -269,6 +255,13 @@ const ActiveCasesDashboard: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center space-x-4">
+          <button
+            onClick={fetchData}
+            className="flex items-center space-x-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
+          </button>
           <button
             onClick={generatePDF}
             className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"

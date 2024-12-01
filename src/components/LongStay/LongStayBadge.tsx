@@ -1,6 +1,6 @@
 import React from 'react';
 import { Clock } from 'lucide-react';
-import { calculateStayDuration } from '../../utils/stayCalculator';
+import { calculateStay } from '../../utils/stayCalculator';
 
 interface LongStayBadgeProps {
   admissionDate: string;
@@ -8,7 +8,7 @@ interface LongStayBadgeProps {
 }
 
 const LongStayBadge: React.FC<LongStayBadgeProps> = ({ admissionDate, showDuration = false }) => {
-  const stayDuration = calculateStayDuration(admissionDate);
+  const stayDuration = calculateStay(admissionDate);
 
   return (
     <div className="inline-flex items-center space-x-1">

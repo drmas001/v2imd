@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Clock, AlertCircle, FileText, Download, RefreshCw } from 'lucide-react';
 import { useLongStayStore } from '../../stores/useLongStayStore';
 import { formatDate } from '../../utils/dateFormat';
-import { calculateStayDuration, LONG_STAY_THRESHOLD } from '../../utils/stayCalculator';
+import { calculateStay, LONG_STAY_THRESHOLD } from '../../utils/stayCalculator';
 import { exportLongStayReport } from '../../utils/longStayReportExport';
 import SafetyBadge from '../PatientProfile/SafetyBadge';
 import DoctorDisplay from '../DoctorDisplay';
@@ -187,7 +187,7 @@ const LongStayReport: React.FC = () => {
               const admission = patient.admissions?.[0];
               if (!admission) return null;
 
-              const stayDuration = calculateStayDuration(admission.admission_date);
+              const stayDuration = calculateStay(admission.admission_date);
 
               return (
                 <div
