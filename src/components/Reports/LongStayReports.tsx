@@ -60,6 +60,9 @@ const LongStayReports: React.FC = () => {
   // Filter and sort patients
   const filteredPatients = patients
     .filter(patient => {
+      const admission = patient.admissions?.[0];
+      if (!admission) return false; // Exclude patients with no admissions
+      if (admission.discharge_date) return false; // Exclude discharged patients
       const matchesDepartment = selectedDepartment === 'all' || patient.department === selectedDepartment;
       const matchesSearch = !searchQuery || 
         patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
